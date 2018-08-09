@@ -1,0 +1,7 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="margin_medium">3dp</dimen>
+    <dimen name="text_size">24sp</dimen>
+    <dimen name="horizontal_page_margin">3dp</dimen>
+    <dimen name="vertical_page_margin">3dp</dimen>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Manhwa Smoker</string>
+    <string name="action_settings">Settings</string>
+    <string name="no_run_exist">No run exist</string>
+    <string name="current_runs">Current Runs</string>
+    <string name="element_text">Run #1, started by someone</string>
+    <string name="_10of18">10/18</string>
+</resources>
