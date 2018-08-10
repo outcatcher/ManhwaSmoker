@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.tsystems.logiweb.manhwa.smoker.R
+import com.tsystems.logiweb.manhwa.smoker.backend.GetCurrentRunsAsync
 
 /**
  * Demonstrates the use of [RecyclerView] with a [LinearLayoutManager] and a
@@ -55,22 +56,14 @@ class RecyclerViewFragment : Fragment() {
      * from a local content provider or remote server.
      */
     private fun initDataSet() {
-        val page = arguments["page"] as Page
-
-
-        val baseTextId = when (page) {
-            Page.PREVIOUS_RUNS -> R.string.prev_run_text
-            Page.CURRENT_RUNS -> R.string.cur_run_text
-        }
-
-        for (i in 0 until DATASET_COUNT) {
-            this.mDataset += context.getString(baseTextId)
+        this.mDataset = when (arguments["page"] as Page) {
+            Page.CURRENT_RUNS -> GetCurrentRunsAsync().execute().get()
+            Page.PREVIOUS_RUNS -> emptyArray()
         }
     }
 
     companion object {
         private const val TAG = "RecyclerViewFragment"
-        private const val DATASET_COUNT = 3
     }
 }
 
