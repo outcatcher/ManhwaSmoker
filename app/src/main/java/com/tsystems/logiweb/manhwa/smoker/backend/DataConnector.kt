@@ -10,15 +10,20 @@ import org.json.JSONObject
 private const val SERVER_URL = "https://manhwa.caritc.com"
 private const val TAG = "DataConnector"
 
-fun getCurrentRuns(): Array<String> {
+private fun getRuns(retry: Int = 5): JSONArray {
     val response = get("$SERVER_URL/progress/runs")
-    val runs: JSONArray
-    try {
-        runs = response.jsonObject["runs"] as JSONArray
+    val emptyJSON = JSONArray()
+    return try {
+        response.jsonObject["runs"] as JSONArray
     } catch (e: JSONException) {
-        throw Exception("Invalid response: ${response.content}")
+        if (retry > 0) getRuns(retry - 1) else emptyJSON
+    } catch (all: Exception) {
+        emptyJSON
     }
+}
 
+fun getCurrentRuns(): Array<String> {
+    val runs = getRuns()
     var runDescriptions: Array<String> = emptyArray()
     for (i in 0 until runs.length()) {
         val run = runs[i] as JSONObject
@@ -35,13 +40,13 @@ fun getPreviousRuns(): Array<String> {
 
 abstract class StringArrayAsyncTask : AsyncTask<Unit, Unit, Array<String>>()
 
-object GetCurrentRunsAsync : StringArrayAsyncTask() {
+class GetCurrentRunsAsync : StringArrayAsyncTask() {
     override fun doInBackground(vararg params: Unit?): Array<String> {
         return getCurrentRuns()
     }
 }
 
-object GetPreviousRunsAsync : StringArrayAsyncTask() {
+class GetPreviousRunsAsync : StringArrayAsyncTask() {
     override fun doInBackground(vararg params: Unit?): Array<String> {
         return getPreviousRuns()
     }

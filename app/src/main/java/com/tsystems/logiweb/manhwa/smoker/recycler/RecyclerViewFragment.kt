@@ -21,7 +21,8 @@ import com.tsystems.logiweb.manhwa.smoker.backend.GetPreviousRunsAsync
 class RecyclerViewFragment : Fragment() {
 
     private var recyclerView: RecyclerView? = null
-    private var dataset: Array<String> = emptyArray()
+    var dataset: Array<String> = emptyArray()
+        private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,17 +36,18 @@ class RecyclerViewFragment : Fragment() {
 
         recyclerView = rootView.findViewById(R.id.recyclerView)
 
-        val swipeContainer = rootView.findViewById(R.id.swipeRefresh) as SwipeRefreshLayout
-        swipeContainer.setOnRefreshListener {
-            this.initDataSet()
-            swipeContainer.isRefreshing = false
-        }
 
         setRecyclerViewLayoutManager()
 
-        val adapter = CustomAdapter(dataset)
+        val adapter = CustomAdapter(this)
         recyclerView!!.adapter = adapter
 
+        val swipeContainer = rootView.findViewById(R.id.swipeRefresh) as SwipeRefreshLayout
+        swipeContainer.setOnRefreshListener {
+            initDataSet()
+            adapter.notifyDataSetChanged()
+            swipeContainer.isRefreshing = false
+        }
         return rootView
     }
 
@@ -66,9 +68,9 @@ class RecyclerViewFragment : Fragment() {
      */
     private fun initDataSet() {
         Log.d(TAG, "List going to be updated")
-        this.dataset = when (arguments["page"] as Page) {
-            Page.CURRENT_RUNS -> GetCurrentRunsAsync.execute().get()
-            Page.PREVIOUS_RUNS -> GetPreviousRunsAsync.execute().get()
+        dataset = when (arguments["page"] as Page) {
+            Page.CURRENT_RUNS -> GetCurrentRunsAsync().execute().get()
+            Page.PREVIOUS_RUNS -> GetPreviousRunsAsync().execute().get()
         }
     }
 

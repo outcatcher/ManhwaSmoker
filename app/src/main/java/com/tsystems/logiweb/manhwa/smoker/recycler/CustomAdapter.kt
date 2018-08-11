@@ -12,9 +12,9 @@ import java.lang.Math.random
 import kotlin.math.roundToInt
 
 /**
- * Provide views to RecyclerView with data from mDataSet.
+ * Provide views to RecyclerView with data from RecyclerViewFragment.dataset
  */
-class CustomAdapter(private val mDataSet: Array<String>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(private val context: RecyclerViewFragment) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
@@ -46,14 +46,14 @@ class CustomAdapter(private val mDataSet: Array<String>) : RecyclerView.Adapter<
 
         // Get element from your dataset at this position and replace the contents of the view
         // with that element
-        viewHolder.rowText.text = mDataSet[position]
+        viewHolder.rowText.text = context.dataset[position]
         viewHolder.rowProgress.progress = (random() * viewHolder.rowProgress.max).roundToInt()
     }
     // END_INCLUDE(recyclerViewOnBindViewHolder)
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int {
-        return mDataSet.size
+        return context.dataset.size
     }
 
     companion object {
