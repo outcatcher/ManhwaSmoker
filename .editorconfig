@@ -5,9 +5,11 @@ insert_final_newline=true
 indent_style=space
 indent_size=4
 
-[{*.sht,*.html,*.shtml,*.shtm,*.htm,*.ng,*.xml}]
-indent_style=space
+[{*.sht,*.html,*.shtml,*.shtm,*.htm,*.ng}]
 indent_size=2
+
+[{*.xml}]
+indent_size=4
 
 [{jest.config,.stylelintrc,.babelrc,*.json,*.bowerrc,*.jsb3,*.jsb2,*.map}]
 indent_style=space

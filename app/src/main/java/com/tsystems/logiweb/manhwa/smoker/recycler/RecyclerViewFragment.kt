@@ -2,14 +2,17 @@ package com.tsystems.logiweb.manhwa.smoker.recycler
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.tsystems.logiweb.manhwa.smoker.R
 import com.tsystems.logiweb.manhwa.smoker.backend.GetCurrentRunsAsync
+import com.tsystems.logiweb.manhwa.smoker.backend.GetPreviousRunsAsync
 
 /**
  * Demonstrates the use of [RecyclerView] with a [LinearLayoutManager] and a
@@ -17,12 +20,12 @@ import com.tsystems.logiweb.manhwa.smoker.backend.GetCurrentRunsAsync
  */
 class RecyclerViewFragment : Fragment() {
 
-    private var mRecyclerView: RecyclerView? = null
-    private var mDataset: Array<String> = emptyArray()
+    private var recyclerView: RecyclerView? = null
+    private var dataset: Array<String> = emptyArray()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initDataSet()  // TODO: insert data request here
+        initDataSet()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -30,12 +33,18 @@ class RecyclerViewFragment : Fragment() {
         val rootView = inflater!!.inflate(R.layout.recyler_view_frag, container, false)
         rootView.tag = TAG
 
-        mRecyclerView = rootView.findViewById(R.id.recyclerView)
+        recyclerView = rootView.findViewById(R.id.recyclerView)
+
+        val swipeContainer = rootView.findViewById(R.id.swipeRefresh) as SwipeRefreshLayout
+        swipeContainer.setOnRefreshListener {
+            this.initDataSet()
+            swipeContainer.isRefreshing = false
+        }
 
         setRecyclerViewLayoutManager()
 
-        val mAdapter = CustomAdapter(mDataset)
-        mRecyclerView!!.adapter = mAdapter
+        val adapter = CustomAdapter(dataset)
+        recyclerView!!.adapter = adapter
 
         return rootView
     }
@@ -46,9 +55,9 @@ class RecyclerViewFragment : Fragment() {
     private fun setRecyclerViewLayoutManager() {
         val scrollPosition = 0
 
-        val mLayoutManager = LinearLayoutManager(activity)
-        mRecyclerView!!.layoutManager = mLayoutManager
-        mRecyclerView!!.scrollToPosition(scrollPosition)
+        val layoutManager = LinearLayoutManager(activity)
+        recyclerView!!.layoutManager = layoutManager
+        recyclerView!!.scrollToPosition(scrollPosition)
     }
 
     /**
@@ -56,9 +65,10 @@ class RecyclerViewFragment : Fragment() {
      * from a local content provider or remote server.
      */
     private fun initDataSet() {
-        this.mDataset = when (arguments["page"] as Page) {
-            Page.CURRENT_RUNS -> GetCurrentRunsAsync().execute().get()
-            Page.PREVIOUS_RUNS -> emptyArray()
+        Log.d(TAG, "List going to be updated")
+        this.dataset = when (arguments["page"] as Page) {
+            Page.CURRENT_RUNS -> GetCurrentRunsAsync.execute().get()
+            Page.PREVIOUS_RUNS -> GetPreviousRunsAsync.execute().get()
         }
     }
 

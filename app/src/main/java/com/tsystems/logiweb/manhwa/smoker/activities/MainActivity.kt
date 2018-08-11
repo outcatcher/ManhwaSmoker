@@ -7,7 +7,7 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
 import com.tsystems.logiweb.manhwa.smoker.R
 import com.tsystems.logiweb.manhwa.smoker.recycler.Page
@@ -36,7 +36,7 @@ class MainActivity : FragmentActivity() {
 
 }
 
-class TestsCollectionAdapter(fm: FragmentManager, private val context: Context) : FragmentPagerAdapter(fm) {
+class TestsCollectionAdapter(val fm: FragmentManager, private val context: Context) : FragmentStatePagerAdapter(fm) {
     var currentPage: Page = Page.CURRENT_RUNS
 
     override fun getItem(position: Int): Fragment {
