@@ -10,4 +10,10 @@
     <string name="title_activity_create_run">CreateRunActivity</string>
     <string name="title_activity_start_run">New Run</string>
     <string name="curr">Current Runs</string>
+    <string name="start_run">Start Run</string>
+    <string name="eld_test">Test</string>
+    <string name="eld_regress_test">Regress Test</string>
+    <string name="eld_field_test">Field Test</string>
+    <string name="eld_reference">Reference</string>
+    <string name="eld_prod">Production</string>
 </resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="none">
+        <item android:id="@+id/run_test" android:title="@string/eld_test"/>
+        <item android:id="@+id/run_regress" android:title="@string/eld_regress_test"/>
+        <item android:id="@+id/run_field" android:title="@string/eld_field_test"/>
+        <item android:id="@+id/run_reference" android:title="@string/eld_reference"/>
+        <item android:id="@+id/run_prod" android:title="@string/eld_prod"/>
+    </group>
+</menu>

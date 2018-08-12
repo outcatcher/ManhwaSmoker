@@ -1,49 +1,65 @@
 package com.tsystems.logiweb.manhwa.smoker.activities
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
+import android.view.Gravity
+import android.widget.PopupMenu
 import com.tsystems.logiweb.manhwa.smoker.R
-import com.tsystems.logiweb.manhwa.smoker.recycler.Page
-import com.tsystems.logiweb.manhwa.smoker.recycler.RecyclerViewFragment
+import com.tsystems.logiweb.manhwa.smoker.backend.StartRunAsync
+import com.tsystems.logiweb.manhwa.smoker.fragments.runs.Page
+import com.tsystems.logiweb.manhwa.smoker.fragments.runs.RunsRecyclerViewFragment
 
 
 class MainActivity : FragmentActivity() {
 
-    private lateinit var mPagesAdapter: TestsCollectionAdapter
-    private lateinit var mViewPager: ViewPager
+    private lateinit var pagesAdapter: TestsCollectionAdapter
+    private lateinit var viewPager: ViewPager
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val fab = findViewById<FloatingActionButton>(R.id.newRun)
-        fab.setOnClickListener {
-            val runIntent = Intent(this, StartRunActivity::class.java)
-            startActivity(runIntent)
+        val popupMenu = PopupMenu(this, fab, Gravity.CENTER)
+        popupMenu.inflate(R.menu.env_selection_menu)
+        popupMenu.setOnMenuItemClickListener {
+            val env = when (it.itemId) {
+                R.id.run_test -> "eldtest"
+                R.id.run_regress -> "eldregress"
+                R.id.run_field -> "eldfield"
+                R.id.run_reference -> "eldreference"
+                R.id.run_prod -> "eldprod"
+                else -> ""
+            }
+            val runStatus = StartRunAsync(env).execute().get()
+            Snackbar.make(fab, runStatus, Snackbar.LENGTH_LONG).show()
+            true
         }
+        fab.setOnClickListener { popupMenu.show() }
 
-        mPagesAdapter = TestsCollectionAdapter(supportFragmentManager, this)
-        mViewPager = findViewById(R.id.pager)
-        mViewPager.adapter = mPagesAdapter
+
+        pagesAdapter = TestsCollectionAdapter(supportFragmentManager, this)
+        viewPager = findViewById(R.id.pager)
+        viewPager.adapter = pagesAdapter
     }
 
 }
 
-class TestsCollectionAdapter(val fm: FragmentManager, private val context: Context) : FragmentStatePagerAdapter(fm) {
+class TestsCollectionAdapter(fm: FragmentManager, private val context: MainActivity) : FragmentStatePagerAdapter(fm) {
     var currentPage: Page = Page.CURRENT_RUNS
 
     override fun getItem(position: Int): Fragment {
-        val recyclerViewFragment = RecyclerViewFragment()
-
+        val recyclerViewFragment = RunsRecyclerViewFragment()
         currentPage = when (position) {
-            Page.CURRENT_RUNS.ordinal -> Page.CURRENT_RUNS
+            Page.CURRENT_RUNS.ordinal -> {
+                Page.CURRENT_RUNS
+            }
             Page.PREVIOUS_RUNS.ordinal -> Page.PREVIOUS_RUNS
             else -> throw IndexOutOfBoundsException("Page ID can be in range 0..1")
         }

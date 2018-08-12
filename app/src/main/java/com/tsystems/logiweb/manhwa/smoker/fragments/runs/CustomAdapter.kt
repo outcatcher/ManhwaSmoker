@@ -1,4 +1,4 @@
-package com.tsystems.logiweb.manhwa.smoker.recycler
+package com.tsystems.logiweb.manhwa.smoker.fragments.runs
 
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -12,9 +12,9 @@ import java.lang.Math.random
 import kotlin.math.roundToInt
 
 /**
- * Provide views to RecyclerView with data from RecyclerViewFragment.dataset
+ * Provide views to RecyclerView with data from RunsRecyclerViewFragment.dataset
  */
-class CustomAdapter(private val context: RecyclerViewFragment) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(private val context: RunsRecyclerViewFragment) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
@@ -32,31 +32,29 @@ class CustomAdapter(private val context: RecyclerViewFragment) : RecyclerView.Ad
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        // Create a new view.
         val v = LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.row_item, viewGroup, false)
+            .inflate(R.layout.row_item, viewGroup, false)
 
         return ViewHolder(v)
     }
 
-    // BEGIN_INCLUDE(recyclerViewOnBindViewHolder)
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         Log.d(TAG, "Element $position set.")
-
-        // Get element from your dataset at this position and replace the contents of the view
-        // with that element
         viewHolder.rowText.text = context.dataset[position]
-        viewHolder.rowProgress.progress = (random() * viewHolder.rowProgress.max).roundToInt()
+        viewHolder.rowProgress.progress = when (context.page) {
+            Page.CURRENT_RUNS -> (random() * viewHolder.rowProgress.max).roundToInt()
+            Page.PREVIOUS_RUNS -> viewHolder.rowProgress.max
+        }
+        viewHolder.rowProgress.visibility = View.INVISIBLE
     }
-    // END_INCLUDE(recyclerViewOnBindViewHolder)
 
-    // Return the size of your dataset (invoked by the layout manager)
+    // Return the size of your data set (invoked by the layout manager)
     override fun getItemCount(): Int {
         return context.dataset.size
     }
 
     companion object {
-        private val TAG = "CustomAdapter"
+        private const val TAG = "CustomAdapter"
     }
 }
