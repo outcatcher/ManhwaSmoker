@@ -1,11 +1,15 @@
 package com.tsystems.logiweb.manhwa.smoker.backend
 
+import android.annotation.SuppressLint
 import android.os.AsyncTask
 import android.util.Log
 import khttp.get
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.roundToLong
 
 private const val SERVER_URL = "https://manhwa.caritc.com"
 private const val TAG = "ManhwaConnector"
@@ -23,19 +27,42 @@ private fun getWithRetry(url: String, retryCount: Int = 5): JSONObject {
     }
 }
 
-fun getCurrentRuns(): List<String> {
-    val runs = getWithRetry("$SERVER_URL/progress/runs")["runs"] as JSONArray
-    var runDescriptions: List<String> = emptyList()
-    for (i in 0 until runs.length()) {
-        val run = runs[i] as JSONObject
-        runDescriptions += run["description"] as String  // description should always be a string
-    }
-    Log.d(TAG, "Current Runs list updated")
-    return runDescriptions
+data class RunResult(val description: String, val percent: Double)
+
+val descriptionRegex = ".+`(\\w+?)`.+on (\\w+).+".toRegex()
+
+@SuppressLint("SimpleDateFormat")
+private fun convertDescription(src: String, timestamp: Float): String {
+    val groups = descriptionRegex.matchEntire(src)!!.groups
+    val type = groups[1]!!.value.capitalize()
+    val env = groups[2]!!.value
+    val time = SimpleDateFormat("HH:mm").format(Date(timestamp.roundToLong()))
+    return "$type on $env ($time)"
 }
 
-fun getPreviousRuns(): List<String> {
-    return listOf("Not Implemented Yet")
+fun getCurrentRuns(): List<RunResult> {
+    val runs = getWithRetry("$SERVER_URL/progress/runs")["runs"] as JSONArray
+    var runResults: List<RunResult> = emptyList()
+    for (i in 0 until runs.length()) {
+        val run = runs[i] as JSONObject
+        val timestamp = (run["start_timestamp"] as String).toFloat() * 1000
+        val description = convertDescription(run["description"] as String, timestamp)
+        val suites = run["test_suites"] as JSONArray
+        var finishedSuites = 0.0
+        val allSuites = suites.length()
+        for (j in 0 until allSuites) {
+            val suite = suites[j] as JSONObject
+            if (suite["status"] != "waiting") finishedSuites += 1
+        }
+        val percent = finishedSuites / allSuites
+        runResults += RunResult(description, percent)
+    }
+    Log.d(TAG, "Current Runs list updated")
+    return runResults
+}
+
+fun getPreviousRuns(): List<RunResult> {
+    return listOf(RunResult("Not Implemented Yet", 0.0))
 }
 
 fun startSmoke(env: String): String {
@@ -53,16 +80,16 @@ fun startSmoke(env: String): String {
     }
 }
 
-abstract class StringArrayAsyncTask : AsyncTask<Unit, Unit, List<String>>()
+abstract class ResultListAsyncTask : AsyncTask<Unit, Unit, List<RunResult>>()
 
-class GetCurrentRunsAsync : StringArrayAsyncTask() {
-    override fun doInBackground(vararg params: Unit?): List<String> {
+class GetCurrentRunsAsync : ResultListAsyncTask() {
+    override fun doInBackground(vararg params: Unit?): List<RunResult> {
         return getCurrentRuns()
     }
 }
 
-class GetPreviousRunsAsync : StringArrayAsyncTask() {
-    override fun doInBackground(vararg params: Unit?): List<String> {
+class GetPreviousRunsAsync : ResultListAsyncTask() {
+    override fun doInBackground(vararg params: Unit?): List<RunResult> {
         return getPreviousRuns()
     }
 }

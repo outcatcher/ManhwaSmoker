@@ -41,12 +41,11 @@ class CustomAdapter(private val context: RunsRecyclerViewFragment) : RecyclerVie
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         Log.d(TAG, "Element $position set.")
-        viewHolder.rowText.text = context.dataset[position]
-        viewHolder.rowProgress.progress = when (context.page) {
-            Page.CURRENT_RUNS -> (random() * viewHolder.rowProgress.max).roundToInt()
-            Page.PREVIOUS_RUNS -> viewHolder.rowProgress.max
-        }
-        viewHolder.rowProgress.visibility = View.INVISIBLE
+        val item = context.dataset[position]
+        viewHolder.rowText.text = item.description
+        val max = viewHolder.rowProgress.max + 1
+        val percent = (item.percent * max).roundToInt() + 1
+        viewHolder.rowProgress.progress = percent
     }
 
     // Return the size of your data set (invoked by the layout manager)

@@ -12,12 +12,13 @@ import android.view.ViewGroup
 import com.tsystems.logiweb.manhwa.smoker.R
 import com.tsystems.logiweb.manhwa.smoker.backend.GetCurrentRunsAsync
 import com.tsystems.logiweb.manhwa.smoker.backend.GetPreviousRunsAsync
+import com.tsystems.logiweb.manhwa.smoker.backend.RunResult
 
 class RunsRecyclerViewFragment : Fragment() {
 
     private var recyclerView: RecyclerView? = null
 
-    var dataset: List<String> = emptyList()
+    var dataset: List<RunResult> = emptyList()
         private set
 
     override fun onCreate(savedInstanceState: Bundle?) {
