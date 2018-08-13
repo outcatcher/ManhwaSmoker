@@ -10,13 +10,13 @@
     <include layout="@layout/content_main" android:id="@+id/include"/>
 
     <android.support.design.widget.FloatingActionButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true" android:id="@+id/newRun"
-            app:layout_anchorGravity="right|bottom"
-            app:layout_anchor="@+id/include" android:focusable="true" app:fabSize="normal"
-            android:visibility="visible"
-            app:backgroundTint="@color/colorAccent" android:src="@drawable/baseline_add_24"
-            android:layout_marginBottom="10dp" android:layout_marginEnd="10dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true" android:id="@+id/newRun"
+        app:layout_anchorGravity="right|bottom"
+        app:layout_anchor="@+id/include" android:focusable="true" app:fabSize="normal"
+        android:visibility="visible"
+        app:backgroundTint="@color/colorAccent" android:src="@drawable/baseline_add_24"
+        android:layout_marginBottom="20dp" android:layout_marginEnd="20dp"/>
 
 </android.support.design.widget.CoordinatorLayout>
