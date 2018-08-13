@@ -35,7 +35,7 @@ val descriptionRegex = ".+`(\\w+?)`.+on (\\w+).+".toRegex()
 private fun convertDescription(src: String, timestamp: Float): String {
     val groups = descriptionRegex.matchEntire(src)!!.groups
     val type = groups[1]!!.value.capitalize()
-    val env = groups[2]!!.value
+    val env = groups[2]!!.value.removePrefix("ELD").toLowerCase().capitalize()
     val time = SimpleDateFormat("HH:mm").format(Date(timestamp.roundToLong()))
     return "$type on $env ($time)"
 }

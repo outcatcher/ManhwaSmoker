@@ -1,5 +1,7 @@
 package com.tsystems.logiweb.manhwa.smoker.activities
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
@@ -20,7 +22,32 @@ class MainActivity : FragmentActivity() {
 
     private lateinit var pagesAdapter: TestsCollectionAdapter
     private lateinit var viewPager: ViewPager
+    private lateinit var runStatus: String
 
+
+    private fun confirmStart(env: String) {
+        val builder = AlertDialog.Builder(this)
+        val onClick = DialogInterface.OnClickListener { _, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    runStatus = startRun(env)
+                    val fab = findViewById<FloatingActionButton>(R.id.newRun)
+                    Snackbar.make(fab, runStatus, Snackbar.LENGTH_LONG).show()
+                }
+                DialogInterface.BUTTON_NEGATIVE -> { }
+            }
+        }
+        val envPretty = env.removePrefix("eld").capitalize()
+        builder
+            .setMessage(getString(R.string.confirm_run_title, envPretty))
+            .setPositiveButton(R.string.confirm_run_yes, onClick)
+            .setNegativeButton(R.string.confirm_run_no, onClick)
+            .show()
+    }
+
+    private fun startRun(env: String): String {
+        return StartRunAsync(env).execute().get()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +64,7 @@ class MainActivity : FragmentActivity() {
                 R.id.run_prod -> "eldprod"
                 else -> ""
             }
-            val runStatus = StartRunAsync(env).execute().get()
-            Snackbar.make(fab, runStatus, Snackbar.LENGTH_LONG).show()
+            confirmStart(env)
             true
         }
         fab.setOnClickListener { popupMenu.show() }
