@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.AsyncTask
 import android.util.Log
 import khttp.get
+import khttp.post
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -12,8 +13,10 @@ import java.util.*
 import kotlin.math.roundToLong
 
 private const val SERVER_URL = "https://manhwa.caritc.com"
+private const val API_URL = "$SERVER_URL/api"
 private const val TAG = "ManhwaConnector"
 private const val LEGAL_LOLY = "WHbbVIbAjEpXzlwgvvgv"
+
 
 /**
  * Runs GET on given URL, retrying `retryCount` times, returning root JSON object of response as result
@@ -40,63 +43,67 @@ private fun convertDescription(src: String, timestamp: Float): String {
     return "$type on $env ($time)"
 }
 
-fun getCurrentRuns(): List<RunResult> {
-    val runs = getWithRetry("$SERVER_URL/progress/runs")["runs"] as JSONArray
-    var runResults: List<RunResult> = emptyList()
-    for (i in 0 until runs.length()) {
-        val run = runs[i] as JSONObject
-        val timestamp = (run["start_timestamp"] as String).toFloat() * 1000
-        val description = convertDescription(run["description"] as String, timestamp)
-        val suites = run["test_suites"] as JSONArray
-        var finishedSuites = 0.0
-        val allSuites = suites.length()
-        for (j in 0 until allSuites) {
-            val suite = suites[j] as JSONObject
-            if (suite["status"] != "waiting") finishedSuites += 1
-        }
-        val percent = finishedSuites / allSuites
-        runResults += RunResult(description, percent)
-    }
-    Log.d(TAG, "Current Runs list updated")
-    return runResults
-}
-
-fun getPreviousRuns(): List<RunResult> {
-    return listOf(RunResult("Not Implemented Yet", 0.0))
-}
-
-fun startSmoke(env: String): String {
-    val requestParams = mapOf(
-        "secret" to LEGAL_LOLY
-    )
-    val response = get("$SERVER_URL/remote_run/$env", params = requestParams)
-    return when (response.statusCode) {
-        200 -> "Run already running"
-        201 -> "Successfully started"
-        else -> {
-            Log.e(TAG, response.text)
-            "Something gone wrong"
-        }
-    }
-}
-
 abstract class ResultListAsyncTask : AsyncTask<Unit, Unit, List<RunResult>>()
 
 class GetCurrentRunsAsync : ResultListAsyncTask() {
     override fun doInBackground(vararg params: Unit?): List<RunResult> {
-        return getCurrentRuns()
+        val runs = getWithRetry("$SERVER_URL/progress/runs")["runs"] as JSONArray
+        var runResults: List<RunResult> = emptyList()
+        for (i in 0 until runs.length()) {
+            val run = runs[i] as JSONObject
+            val timestamp = (run["start_timestamp"] as String).toFloat() * 1000
+            val description = convertDescription(run["description"] as String, timestamp)
+            val suites = run["test_suites"] as JSONArray
+            var finishedSuites = 0.0
+            val allSuites = suites.length()
+            for (j in 0 until allSuites) {
+                val suite = suites[j] as JSONObject
+                if (suite["status"] != "waiting") finishedSuites += 1
+            }
+            val percent = finishedSuites / allSuites
+            runResults += RunResult(description, percent)
+        }
+        Log.d(TAG, "Current Runs list updated")
+        return runResults
     }
 }
 
 class GetPreviousRunsAsync : ResultListAsyncTask() {
     override fun doInBackground(vararg params: Unit?): List<RunResult> {
-        return getPreviousRuns()
+        return listOf(RunResult("Not Implemented Yet", 0.0))
     }
 }
 
-class StartRunAsync(private val env: String) : AsyncTask<String, Unit, String>() {
+class StartSmokeAsync(private val env: String) : AsyncTask<String, Unit, String>() {
     override fun doInBackground(vararg params: String): String {
-        return startSmoke(env)
+        val requestParams = mapOf(
+            "secret" to LEGAL_LOLY
+        )
+        val response = get("$SERVER_URL/remote_run/$env", params = requestParams)
+        return when (response.statusCode) {
+            200 -> "Run already running"
+            201 -> "Successfully started"
+            else -> {
+                Log.e(TAG, response.text)
+                "Something gone wrong"
+            }
+        }
     }
 
+}
+
+
+class UserLoginAsync(private val username: String, private val password: String, private val storeCallback: (String) -> Unit) : AsyncTask<Unit, Unit, Boolean>() {
+    override fun doInBackground(vararg params: Unit): Boolean {
+        try {
+            val response = post("$API_URL/auth", json = mapOf("username" to username, "password" to password))
+            if (response.statusCode == 200) {
+                storeCallback(response.text)
+                return true
+            }
+            return false
+        } catch (e: InterruptedException) {
+            return false
+        }
+    }
 }

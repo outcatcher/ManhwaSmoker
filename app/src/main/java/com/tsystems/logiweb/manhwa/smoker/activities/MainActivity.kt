@@ -13,7 +13,7 @@ import android.support.v4.view.ViewPager
 import android.view.Gravity
 import android.widget.PopupMenu
 import com.tsystems.logiweb.manhwa.smoker.R
-import com.tsystems.logiweb.manhwa.smoker.backend.StartRunAsync
+import com.tsystems.logiweb.manhwa.smoker.backend.StartSmokeAsync
 import com.tsystems.logiweb.manhwa.smoker.fragments.runs.Page
 import com.tsystems.logiweb.manhwa.smoker.fragments.runs.RunsRecyclerViewFragment
 
@@ -46,7 +46,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun startRun(env: String): String {
-        return StartRunAsync(env).execute().get()
+        return StartSmokeAsync(env).execute().get()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
