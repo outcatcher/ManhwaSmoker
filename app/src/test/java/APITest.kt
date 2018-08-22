@@ -1,20 +1,16 @@
 package com.tsystems.logiweb.manhwa.smoker
 
-import com.tsystems.logiweb.manhwa.smoker.backend.*
-import org.junit.Assert
-import org.junit.Test
+import com.tsystems.logiweb.manhwa.smoker.backend.UserLoginAsync
+import com.tsystems.logiweb.manhwa.smoker.backend.VerifyTokenAsync
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
 
+class APITest: StringSpec({
 
-class APITest {
-
-
-    private val defaultConfig = defaultConfiguration
-    private val testConfiguration = ConfigurationContainer("http://localhost:5000", "api")
-
-    @Test
-    fun authWorks() {
-        SharedConfiguration.configuration = testConfiguration
+    "Received Token Should Be Valid" {
         val token = UserLoginAsync.userLogin("akachuri", "akachuri")!!
-        Assert.assertTrue(VerifyTokenAsync.verifyToken(token))
+        val tokenValid = VerifyTokenAsync.verifyToken(token)
+        tokenValid shouldBe true
     }
-}
+
+})
