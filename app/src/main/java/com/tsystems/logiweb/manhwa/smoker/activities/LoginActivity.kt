@@ -6,11 +6,13 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.tsystems.logiweb.manhwa.smoker.R
 import com.tsystems.logiweb.manhwa.smoker.backend.UserLoginAsync
+import com.tsystems.logiweb.manhwa.smoker.backend.VerifyTokenAsync
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.concurrent.TimeUnit
 
@@ -28,19 +30,28 @@ class LoginActivity : Activity() {
         Context.MODE_PRIVATE
     )
 
-    fun getToken(): String? {
+    private fun getToken(): String? {
         return preferences.getString("jwt", null)
     }
 
     private fun setToken(token: String) {
         with(preferences.edit()) {
-            putString("jwt", token)
+            putString(TOKEN_KEY, token)
+            apply()
+        }
+        Log.d(TAG, "Token is set")
+    }
+
+    private fun clearToken() {
+        Log.d(TAG, "Removing token...")
+        with(preferences.edit()) {
+            remove(TOKEN_KEY)
             apply()
         }
     }
 
-    private fun checkToken() : Boolean {
-        return getToken() != null
+    private fun checkToken(token: String) : Boolean {
+        return VerifyTokenAsync(token).execute().get(5, TimeUnit.SECONDS)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +65,13 @@ class LoginActivity : Activity() {
             }
             false
         })
-        if (getToken() != null){  // login already done
-            moveToMainActivity()
+        val token = getToken()
+        if (token != null){
+            if (checkToken(token)) {
+                moveToMainActivity()
+            } else {
+                clearToken()
+            }
         }
         sign_in_button.setOnClickListener { attemptLogin() }
     }
@@ -144,6 +160,11 @@ class LoginActivity : Activity() {
                     login_progress.visibility = if (show) View.VISIBLE else View.GONE
                 }
             })
+    }
+
+    companion object {
+        private const val TOKEN_KEY = "jwt"
+        private const val TAG = "LoginActivity"
     }
 
 }
