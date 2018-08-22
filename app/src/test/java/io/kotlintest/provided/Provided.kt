@@ -1,21 +1,21 @@
 package io.kotlintest.provided
 
-import com.tsystems.logiweb.manhwa.smoker.backend.ConfigurationContainer
 import com.tsystems.logiweb.manhwa.smoker.backend.SharedConfiguration
 import com.tsystems.logiweb.manhwa.smoker.backend.defaultConfiguration
+import com.tsystems.logiweb.manhwa.smoker.backend.loadConfig
 import io.kotlintest.AbstractProjectConfig
 
 
 object ProjectConfig : AbstractProjectConfig() {
     private val defaultConfig = defaultConfiguration
-    private val testConfiguration = ConfigurationContainer("http://localhost:5000", "api")
+    private val testConfig = loadConfig("test.json")
 
     override fun afterAll() {
         SharedConfiguration.configuration = defaultConfig
     }
 
     override fun beforeAll() {
-        SharedConfiguration.configuration = testConfiguration
+        SharedConfiguration.configuration = testConfig
     }
 }
 

@@ -1,4 +1,4 @@
 {
   "serverUrl": "https://manhwa.caritc.com",
-  "apiPath": "/api"
+  "apiPath": "api"
 }
