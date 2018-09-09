@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#ffb74d</color>
     <color name="colorAccent">#ffb74d</color>
     <color name="colorControlNormal">#ffffff</color>
+    <color name="colorFail">#46e53935</color>
+    <color name="colorPass">#4664dd17</color>
 </resources>

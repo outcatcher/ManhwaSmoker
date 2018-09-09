@@ -1,4 +1,4 @@
-package com.tsystems.logiweb.manhwa.smoker.fragments.runs
+package com.outcatcher.manhwa.smoker.fragments.runs
 
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.tsystems.logiweb.manhwa.smoker.R
-import java.lang.Math.random
+import com.outcatcher.manhwa.smoker.R
+import com.outcatcher.manhwa.smoker.backend.TestStatus
 import kotlin.math.roundToInt
 
 /**
@@ -20,15 +20,8 @@ class CustomAdapter(private val context: RunsRecyclerViewFragment) : RecyclerVie
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val rowText: TextView
-        val rowProgress: ProgressBar
-
-        init {
-            // Define click listener for the ViewHolder's View.
-            v.setOnClickListener { Log.d(TAG, "Element $adapterPosition clicked.") }
-            rowText = v.findViewById<View>(R.id.mainActivityTitle) as TextView
-            rowProgress = v.findViewById<View>(R.id.progressBar) as ProgressBar
-        }
+        val rowText = v.findViewById<View>(R.id.main_activity_title) as TextView
+        val rowProgress = v.findViewById<View>(R.id.progressBar) as ProgressBar
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
@@ -43,9 +36,20 @@ class CustomAdapter(private val context: RunsRecyclerViewFragment) : RecyclerVie
         Log.d(TAG, "Element $position set.")
         val item = context.dataset[position]
         viewHolder.rowText.text = item.description
-        val max = viewHolder.rowProgress.max + 1
-        val percent = (item.percent * max).roundToInt() + 1
-        viewHolder.rowProgress.progress = percent
+        val max = viewHolder.rowProgress.max
+        viewHolder.rowProgress.progress = (item.finishedPercent * max).roundToInt() + 1
+
+        fun ifFinished() {
+            val color = when (item.status) {
+                TestStatus.FAIL -> context.resources.getColor(R.color.colorFail, null)
+                TestStatus.PASS -> context.resources.getColor(R.color.colorPass, null)
+                else -> return
+            }
+            viewHolder.rowText.setBackgroundColor(color)
+            viewHolder.rowProgress.visibility = View.GONE
+        }
+
+        ifFinished()
     }
 
     // Return the size of your data set (invoked by the layout manager)
