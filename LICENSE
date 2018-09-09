@@ -1,6 +1,6 @@
-### MIT License
+MIT License
 
-##### Copyright (c) 2018 Anton Kachurin
+Copyright (c) 2018 Anton Kachurin
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,6 @@ SOFTWARE.
 
 ---
 
-**NB!** this license applied only for versions marked with tag `release_0.4` and further
+NB! this license applied only for versions marked with tag `release_0.4` and further
 
-Before this commit, software and code is _not for public distribution_
+Before this commit, software and code is NOT FOR PUBLIC DISTRIBUTION
