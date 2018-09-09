@@ -17,7 +17,6 @@
     <string name="eld_field_test">Field Test</string>
     <string name="eld_reference">Reference</string>
     <string name="eld_prod">Production</string>
-    <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
     <string name="prompt_username">Username</string>
