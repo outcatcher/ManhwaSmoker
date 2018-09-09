@@ -1,4 +1,4 @@
-package com.tsystems.logiweb.manhwa.smoker.activities
+package com.outcatcher.manhwa.smoker.activities
 
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -12,10 +12,10 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
 import android.view.Gravity
 import android.widget.PopupMenu
-import com.tsystems.logiweb.manhwa.smoker.R
-import com.tsystems.logiweb.manhwa.smoker.backend.StartSmokeAsync
-import com.tsystems.logiweb.manhwa.smoker.fragments.runs.Page
-import com.tsystems.logiweb.manhwa.smoker.fragments.runs.RunsRecyclerViewFragment
+import com.outcatcher.manhwa.smoker.R
+import com.outcatcher.manhwa.smoker.backend.StartSmokeAsync
+import com.outcatcher.manhwa.smoker.fragments.runs.Page
+import com.outcatcher.manhwa.smoker.fragments.runs.RunsRecyclerViewFragment
 
 
 class MainActivity : FragmentActivity() {
@@ -57,11 +57,11 @@ class MainActivity : FragmentActivity() {
         popupMenu.inflate(R.menu.env_selection_menu)
         popupMenu.setOnMenuItemClickListener {
             val env = when (it.itemId) {
-                R.id.run_test -> "eldtest"
-                R.id.run_regress -> "eldregress"
-                R.id.run_field -> "eldfield"
-                R.id.run_reference -> "eldreference"
-                R.id.run_prod -> "eldprod"
+                R.id.run_test -> "test"
+                R.id.run_regress -> "regress"
+                R.id.run_field -> "field"
+                R.id.run_reference -> "reference"
+                R.id.run_prod -> "prod"
                 else -> ""
             }
             confirmStart(env)

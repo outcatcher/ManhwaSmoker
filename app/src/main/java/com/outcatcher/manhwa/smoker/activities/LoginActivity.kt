@@ -1,8 +1,9 @@
-package com.tsystems.logiweb.manhwa.smoker.activities
+package com.outcatcher.manhwa.smoker.activities
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,9 +11,10 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
-import com.tsystems.logiweb.manhwa.smoker.R
-import com.tsystems.logiweb.manhwa.smoker.backend.UserLoginAsync
-import com.tsystems.logiweb.manhwa.smoker.backend.VerifyTokenAsync
+import com.outcatcher.manhwa.smoker.R
+import com.outcatcher.manhwa.smoker.backend.UserLoginAsync
+import com.outcatcher.manhwa.smoker.backend.VerifyTokenAsync
+import com.outcatcher.manhwa.smoker.backend.serverAvailable
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.concurrent.TimeUnit
 
@@ -25,10 +27,11 @@ class LoginActivity : Activity() {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private var authTask: UserLoginAsync? = null
-    private val preferences = getSharedPreferences(
-        getString(R.string.pref_file_key),
-        Context.MODE_PRIVATE
-    )
+    private val preferences
+        get() = getSharedPreferences(
+            getString(R.string.pref_file_key),
+            Context.MODE_PRIVATE
+        )
 
     private fun getToken(): String? {
         return preferences.getString("jwt", null)
@@ -50,8 +53,14 @@ class LoginActivity : Activity() {
         }
     }
 
-    private fun checkToken(token: String) : Boolean {
+    private fun checkToken(token: String): Boolean {
         return VerifyTokenAsync(token).execute().get(5, TimeUnit.SECONDS)
+    }
+
+    private fun noConnection() {
+        val noConnection = AlertDialog.Builder(this)
+        noConnection.setMessage("No connection to the backend")
+        noConnection.show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,15 +74,21 @@ class LoginActivity : Activity() {
             }
             false
         })
-        val token = getToken()
-        if (token != null){
-            if (checkToken(token)) {
-                moveToMainActivity()
-            } else {
-                clearToken()
+        sign_in_button.setOnClickListener { attemptLogin() }
+
+        // first of all — check if connection to BE is available
+        if (!serverAvailable()) {
+            noConnection()
+        } else {
+            val token = getToken()
+            if (token != null) {
+                if (checkToken(token)) {
+                    moveToMainActivity()
+                } else {
+                    clearToken()
+                }
             }
         }
-        sign_in_button.setOnClickListener { attemptLogin() }
     }
 
     /**
@@ -82,6 +97,12 @@ class LoginActivity : Activity() {
      * errors are presented and no actual login attempt is made.
      */
     private fun attemptLogin() {
+
+        if (!serverAvailable()){
+            noConnection()
+            return
+        }
+
         if (authTask != null) {
             return
         }
@@ -119,8 +140,8 @@ class LoginActivity : Activity() {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true)
-            authTask = UserLoginAsync(usernameStr, passwordStr, ::setToken)
-            val loginSucceed = authTask!!.execute().get(5, TimeUnit.SECONDS)
+            authTask = UserLoginAsync(usernameStr, passwordStr) { setToken(it) }
+            val loginSucceed = authTask!!.execute().get()
             showProgress(false)
             if (loginSucceed) {
                 moveToMainActivity()
@@ -129,6 +150,7 @@ class LoginActivity : Activity() {
                 password.requestFocus()
             }
         }
+        authTask = null
     }
 
     private fun moveToMainActivity() {
