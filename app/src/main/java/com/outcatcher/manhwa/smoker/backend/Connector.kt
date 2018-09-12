@@ -40,9 +40,10 @@ class Connector(private val api_url: String) {
      * Send user credentials returning received token
      */
     fun userLogin(username: String, password: String): String? {
-        val credentials = Credentials(username, password)
+        val credentials = Credentials(username, password).json()
+        Log.d(TAG, "Credentials: $credentials")
         try {
-            val (_, response, result) = "$api_url/auth".httpPost().jsonBody(credentials.json())
+            val (_, response, result) = "$api_url/auth".httpPost().jsonBody(credentials)
                 .responseObject<TokenJson>()
             if ((result is Result.Success) && (response.statusCode == 200)) {
                 val token = result.value.token
