@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-dontwarn org.w3c.dom.bootstrap.DOMImplementationRegistry
+-dontwarn java.beans.Transient
+-dontwarn java.beans.ConstructorProperties
