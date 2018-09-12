@@ -12,15 +12,6 @@ class StartSmokeAsync(private val env: String) : AsyncTask<String, Unit, String>
 
 }
 
-
-class UserLoginAsync(private val username: String, private val password: String, private val tokenCallback: (String) -> Unit) : AsyncTask<Unit, Unit, Boolean>() {
-    override fun doInBackground(vararg params: Unit?): Boolean {
-        val token = DefaultConnector.userLogin(username, password) ?: return false
-        tokenCallback(token)
-        return true
-    }
-}
-
 abstract class AsyncUnitCheck : AsyncTask<Unit, Unit, Boolean>()
 
 class VerifyTokenAsync(private val token: String) : AsyncUnitCheck() {

@@ -14,7 +14,6 @@ import com.outcatcher.manhwa.smoker.R
 import com.outcatcher.manhwa.smoker.backend.GetCurrentRunsAsync
 import com.outcatcher.manhwa.smoker.backend.GetPreviousRunsAsync
 import com.outcatcher.manhwa.smoker.backend.TestRunResultList
-import java.net.ProtocolException
 import java.util.concurrent.TimeUnit
 
 class RunsRecyclerViewFragment : Fragment() {

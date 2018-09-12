@@ -6,13 +6,14 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.outcatcher.manhwa.smoker.R
-import com.outcatcher.manhwa.smoker.backend.UserLoginAsync
+import com.outcatcher.manhwa.smoker.backend.DefaultConnector
 import com.outcatcher.manhwa.smoker.backend.VerifyTokenAsync
 import com.outcatcher.manhwa.smoker.backend.serverAvailable
 import kotlinx.android.synthetic.main.activity_login.*
@@ -37,7 +38,7 @@ class LoginActivity : Activity() {
         return preferences.getString("jwt", null)
     }
 
-    private fun setToken(token: String) {
+    fun setToken(token: String) {
         with(preferences.edit()) {
             putString(TOKEN_KEY, token)
             apply()
@@ -98,7 +99,7 @@ class LoginActivity : Activity() {
      */
     private fun attemptLogin() {
 
-        if (!serverAvailable()){
+        if (!serverAvailable()) {
             noConnection()
             return
         }
@@ -140,17 +141,37 @@ class LoginActivity : Activity() {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true)
-            authTask = UserLoginAsync(usernameStr, passwordStr) { setToken(it) }
-            val loginSucceed = authTask!!.execute().get()
+            authTask = UserLoginAsync(usernameStr, passwordStr)
+            authTask!!.execute()
+        }
+    }
+
+    private inner class UserLoginAsync(private val username_val: String, private val password_val: String) : AsyncTask<Unit, Unit, Boolean>() {
+        private var token: String? = null
+
+        override fun doInBackground(vararg params: Unit?): Boolean {
+            token = DefaultConnector.userLogin(username_val, password_val) ?: return false
+            return true
+        }
+
+        override fun onPostExecute(success: Boolean?) {
+            authTask = null
             showProgress(false)
-            if (loginSucceed) {
+
+            if (success!!) {
+                setToken(token!!)
                 moveToMainActivity()
+                finish()
             } else {
                 password.error = getString(R.string.error_incorrect_password)
                 password.requestFocus()
             }
         }
-        authTask = null
+
+        override fun onCancelled() {
+            authTask = null
+            showProgress(false)
+        }
     }
 
     private fun moveToMainActivity() {
