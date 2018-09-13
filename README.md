@@ -15,3 +15,6 @@ stored on server, application — all finished)
 
 ##### Up to date version
 Link to [dropbox](https://www.dropbox.com/s/lngigsoauc8jz7a/manhwa_smoker_v042.apk?dl=1)
+
+##### All versions
+Link to [dropbox](https://www.dropbox.com/sh/d82gk645j37in8z/AAAEJFVxAI-1MxDSFxcwn2t2a?dl=0)
