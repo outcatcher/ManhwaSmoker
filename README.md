@@ -14,4 +14,4 @@ then web version — web version shows only runs which results are
 stored on server, application — all finished)
 
 ##### Up to date version
-Link to [dropbox](https://www.dropbox.com/s/nxrvqn96licakqf/manhwa_smoker_v04.apk?dl=1)
+Link to [dropbox](https://www.dropbox.com/s/lngigsoauc8jz7a/manhwa_smoker_v042.apk?dl=1)
